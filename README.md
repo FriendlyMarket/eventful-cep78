@@ -1,6 +1,6 @@
 # CEP-78: Enhanced NFT standard
 
-This is a fork of the original [CEP-78: Enhanced NFT standard](https://github.com/casper-ecosystem/cep-78-enhanced-nft). This is different in that this repo has support for events, royalties and is tailored to use `OwnerReverseLookupMode::NoLookUp`.
+This is a fork of the original [CEP-78: Enhanced NFT standard](https://github.com/casper-ecosystem/cep-78-enhanced-nft). This is different in that this repo has support for events and royalties.
 
 [![ci-cep-78-enhanced-nft](https://github.com/FriendlyMarket/eventful-cep78/actions/workflows/ci-cep-78-enhanced-nft.yml/badge.svg)](https://github.com/FriendlyMarket/eventful-cep78/actions/workflows/ci-cep-78-enhanced-nft.yml)
 
