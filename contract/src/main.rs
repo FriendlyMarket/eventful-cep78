@@ -292,7 +292,7 @@ pub extern "C" fn init() {
     runtime::put_key(RECEIPT_NAME, storage::new_uref(receipt_name).into());
     runtime::put_key(
         &format!("{}{}", CEP78_PREFIX, collection_name),
-        storage::new_uref(package_hash.clone()).into(),
+        storage::new_uref(package_hash).into(),
     );
     runtime::put_key(
         NFT_METADATA_KIND,
@@ -674,7 +674,7 @@ pub extern "C" fn mint() {
 
     emit_cep78(&events::CEP78Event::Mint {
         to: token_owner_key,
-        token_id: token_identifier.clone(),
+        token_id: token_identifier,
         balance: updated_token_count,
     });
 }
