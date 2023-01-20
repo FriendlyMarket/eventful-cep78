@@ -3,15 +3,11 @@ name: ci-casper-cep78-js-client
 on:
   push:
     branches:
-      - "dev"
-      - "feat-*"
-      - "release-*"
+      - 'main'
 
   pull_request:
     branches:
-      - "dev"
-      - "feat-*"
-      - "release-*"
+      - 'main'
 
 jobs:
   build:
@@ -34,7 +30,7 @@ jobs:
       - name: Setup
         run: make prepare
 
-      - name: Prepare WASMs 
+      - name: Prepare WASMs
         run: make setup-test
 
       - name: Use Node.js ${{ matrix.node-version }}

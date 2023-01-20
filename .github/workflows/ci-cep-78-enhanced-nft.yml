@@ -3,15 +3,11 @@ name: ci-cep-78-enhanced-nft
 on:
   push:
     branches:
-      - "dev"
-      - "feat-*"
-      - "release-*"
+      - 'main'
 
   pull_request:
     branches:
-      - "dev"
-      - "feat-*"
-      - "release-*"
+      - 'main'
 
 env:
   CARGO_TERM_COLOR: always
