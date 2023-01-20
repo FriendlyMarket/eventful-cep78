@@ -24,9 +24,9 @@ use core::convert::TryInto;
 use events::{emit_cep78, CEP78Event};
 
 use casper_types::{
-    contracts::NamedKeys, runtime_args, CLType, CLValue, ContractHash, ContractPackageHash,
-    EntryPoint, EntryPointAccess, EntryPointType, EntryPoints, Key, KeyTag, Parameter, RuntimeArgs,
-    Tagged, U256,
+    account::AccountHash, contracts::NamedKeys, runtime_args, CLType, CLValue, ContractHash,
+    ContractPackageHash, EntryPoint, EntryPointAccess, EntryPointType, EntryPoints, Key, KeyTag,
+    Parameter, RuntimeArgs, Tagged, U256,
 };
 
 use casper_contract::{
@@ -318,6 +318,12 @@ pub extern "C" fn init() {
     // This is an internal variable that the installing account cannot change
     // but is incremented by the contract itself.
     runtime::put_key(NUMBER_OF_MINTED_TOKENS, storage::new_uref(0u64).into());
+
+    // Initialize collection royalty information.
+    runtime::put_key(
+        COLLECTION_ROYALTY,
+        storage::new_uref((0u64, Key::from(AccountHash::default()))).into(),
+    );
 
     // Create the data dictionaries to store essential values, topically.
     storage::new_dictionary(TOKEN_OWNERS)
@@ -2176,11 +2182,15 @@ pub extern "C" fn royalty_info() {
         )
     };
 
-    let royalty_amount = sale_price
-        .checked_mul(U256::from(royalty_info.0))
-        .unwrap()
-        .checked_div(U256::from(10000))
-        .unwrap();
+    let royalty_amount = if royalty_info.0 > 0 {
+        sale_price
+            .checked_mul(U256::from(royalty_info.0))
+            .unwrap()
+            .checked_div(U256::from(10000))
+            .unwrap()
+    } else {
+        U256::from(0)
+    };
 
     runtime::ret(
         CLValue::from_t((royalty_amount, royalty_info.1))

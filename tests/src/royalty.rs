@@ -2,7 +2,7 @@ use casper_engine_test_support::{
     ExecuteRequestBuilder, InMemoryWasmTestBuilder, DEFAULT_ACCOUNT_ADDR, DEFAULT_ACCOUNT_KEY,
     DEFAULT_PROPOSER_ADDR, DEFAULT_RUN_GENESIS_REQUEST,
 };
-use casper_types::{runtime_args, Key, RuntimeArgs, U256};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 
 use crate::utility::{
     constants::{CONTRACT_NAME, NFT_CONTRACT_WASM},
@@ -202,6 +202,43 @@ fn should_get_collection_royalty_info_when_token_royalty_does_not_exist() {
         U256::from(35_000_000_000u64),
         Key::from(*DEFAULT_ACCOUNT_KEY),
     );
+
+    let actual_royalty: (U256, Key) = call_entry_point_with_ret(
+        &mut builder,
+        *DEFAULT_ACCOUNT_ADDR,
+        nft_contract_key,
+        runtime_args! {
+            "sale_price" => U256::from(sale_price),
+            "token_id" => token_id,
+        },
+        "royalty_info_call.wasm",
+        "royalty_info",
+    );
+    assert_eq!(actual_royalty, expected_royalty);
+}
+
+#[test]
+fn should_return_zero_when_royalty_does_not_exist() {
+    let token_id = 0u64;
+    let sale_price = 500_000_000_000u64;
+    let mut builder = InMemoryWasmTestBuilder::default();
+    builder.run_genesis(&DEFAULT_RUN_GENESIS_REQUEST).commit();
+
+    let install_request_builder =
+        InstallerRequestBuilder::new(*DEFAULT_ACCOUNT_ADDR, NFT_CONTRACT_WASM)
+            .with_total_token_supply(100u64)
+            .with_ownership_mode(OwnershipMode::Transferable)
+            .with_reporting_mode(OwnerReverseLookupMode::Complete)
+            .build();
+
+    builder
+        .exec(install_request_builder)
+        .expect_success()
+        .commit();
+
+    let nft_contract_key: Key = get_nft_contract_hash(&builder).into();
+
+    let expected_royalty = (U256::from(0), Key::from(AccountHash::default()));
 
     let actual_royalty: (U256, Key) = call_entry_point_with_ret(
         &mut builder,
